@@ -1,63 +1,123 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useHistory } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
+import { CatContext } from "../contexts/CatContext";
 
-const Nav = ({ loged, LogOut, LogIn }) => {
+// -------------------MATERIAL UI---------------------
+import { AppBar, Typography, Toolbar, Button } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import PetsIcon from "@material-ui/icons/Pets";
+import Badge from "@material-ui/core/Badge";
+
+const useStyles = makeStyles({
+  logo: {
+    fontWeight: "bold",
+    fontSize: 30,
+    textDecoration: "none",
+    flexGrow: 1,
+    color: "white",
+    display: "flex",
+  },
+  linkStyle: {
+    textDecoration: "none",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    color: "#000000",
+    flexGrow: 1,
+  },
+  navbattons: {
+    // "&:hover": {
+    //   backgroundColor: "#ffffff",
+    //   color: "#000000",
+    // },
+    marginRight: 30,
+    backgroundColor: "#e5e5e5",
+    colour: "#e5e5e5",
+  },
+  icon: {
+    fontSize: 50,
+    marginRight: 10,
+  },
+  custombadge: {
+    position: "relative",
+    right: 25,
+    bottom: 15,
+    "& .MuiBadge-badge": {
+      fontSize: 16,
+      // fontWeight: "bold",
+    },
+  },
+});
+const Nav = ({}) => {
+  const { userName, logout, isLoggedIn } = useContext(AuthContext);
+  const { resetAllCats, favouriteCats } = useContext(CatContext);
+  const history = useHistory();
+  const handleLogout = () => {
+    logout();
+    resetAllCats();
+  };
+  const handleLogIn = () => {
+    history.push("/login");
+  };
+  const classes = useStyles();
   return (
-    <div className="text-gray-700 bg-white body-font">
-      <div className="flex flex-col flex-wrap p-5 mx-auto border-b md:items-center md:flex-row">
-        <a href="./" className="pr-2 lg:pr-8  focus:outline-none">
-          <div className="inline-flex items-center">
-            <div className="w-2 h-2 p-2 mr-2 rounded-full bg-gradient-to-tr from-cyan-400 to-lightBlue-500"></div>
-            <h2 className="font-semibold tracking-tighter transition duration-1000 ease-in-out transform text-blueGray-500 dark:text-blueGray-200 lg:text-md text-bold ">
-              Express Publishing
-            </h2>
-          </div>
-        </a>
-        {loged ? (
-          <nav className="flex flex-wrap items-center justify-center text-base md:ml-auto md:mr-auto">
-            <Link
-              to="/cats"
-              className="mr-5 text-sm font-semibold text-gray-600 hover:text-gray-800"
-            >
-              CATS
+    <div>
+      <AppBar>
+        <Toolbar>
+          <PetsIcon color="secondary" className={classes.icon} />
+          <Typography className={classes.logo} varient="h3">
+            <Link className={classes.logo} to="/">
+              The Cat API
             </Link>
-            <Link
-              to="/favourite"
-              className=" text-sm font-semibold text-gray-600 hover:text-gray-800"
-            >
-              FAVOURITE CATS
-            </Link>
-          </nav>
-        ) : (
-          //mpakalistika gia na desmeuei xoro
-          <nav className="flex flex-wrap items-center justify-center text-base md:ml-auto md:mr-auto">
-            <a
-              href="/"
-              className="mr-5 text-sm font-semibold text-gray-600 hover:text-gray-800"
-            ></a>
-            <a
-              href="/favourite"
-              className=" text-sm font-semibold text-gray-600 hover:text-gray-800"
-            ></a>
-          </nav>
-        )}
-        {loged ? (
-          <Link
-            to="/"
-            onClick={LogOut}
-            className="items-center px-8 py-2 font-semibold text-white transition duration-500 ease-in-out transform bg-black rounded-lg hover:bg-blueGray-900 focus:ring focus:outline-none"
-          >
-            Logout
-          </Link>
-        ) : (
-          <button
-            onClick={LogIn}
-            className="items-center px-8 py-2  font-semibold text-white transition duration-500 ease-in-out transform bg-black rounded-lg hover:bg-blueGray-900 focus:ring focus:outline-none"
-          >
-            Login
-          </button>
-        )}
-      </div>
+          </Typography>
+
+          <Typography>
+            {isLoggedIn && (
+              <>
+                <Button
+                  variant="contained"
+                  size="large"
+                  className={classes.navbattons}
+                >
+                  <Link className={classes.linkStyle} to="/cats">
+                    CATS
+                  </Link>
+                </Button>
+
+                <Button
+                  variant="contained"
+                  size="large"
+                  className={classes.navbattons}
+                >
+                  <Link className={classes.linkStyle} to="/favourite">
+                    FAVOURITE CATS
+                  </Link>
+                </Button>
+                <Badge
+                  color="secondary"
+                  className={classes.custombadge}
+                  badgeContent={favouriteCats.length}
+                  style={{ fontSize: "50px" }}
+                />
+              </>
+            )}
+            {isLoggedIn ? (
+              <Button
+                variant="contained"
+                color="secondary"
+                size="large"
+                onClick={handleLogout}
+              >
+                Log Out
+              </Button>
+            ) : (
+              <Button variant="contained" size="large" onClick={handleLogIn}>
+                Log In
+              </Button>
+            )}
+          </Typography>
+        </Toolbar>
+      </AppBar>
     </div>
   );
 };

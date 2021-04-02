@@ -1,54 +1,54 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Nav from "./components/Nav";
 import LoginForm from "./components/LoginForm";
 import Cats from "./components/Cats";
+import TestLoginForm from "./components/TestLoginForm";
 import Welcome from "./components/Welcome";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 import Favourite from "./components/Favourite";
+import { AuthContext } from "./contexts/AuthContext";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import NotFound from "./components/NotFound";
+//--------------MATERIAL UI--------------------------
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
+const theme = createMuiTheme({
+  palette: {
+    primary: { main: "#14213d " },
+    secondary: { main: "#fca311" },
+  },
+});
 function App() {
-  const [user, setUser] = useState({ name: "", email: "" });
-  const [error, setError] = useState("");
-  const [loged, isLoged] = useState(false);
-  const Login = (details) => {
-    if (
-      details.email !== "" &&
-      details.password !== "" &&
-      details.name !== ""
-    ) {
-      setUser({ name: details.name, email: details.email });
-      isLoged(true);
-    } else {
-      setError("please fill all the fields");
-    }
-  };
-  const LogOut = () => {
-    setUser({ name: "", email: "" });
-    isLoged(false);
-    setError("");
-  };
+  const {
+    userName,
+    passWord,
+    setPassword,
+    setUsername,
+    isLoggedIn,
+  } = useContext(AuthContext);
 
   return (
-    <Router>
-      <div className="App">
-        <Nav loged={loged} LogOut={LogOut} />
-
-        <Route
-          exact
-          path="/"
-          component={() => (
-            <LoginForm user={user} Login={Login} loged={loged} error={error} />
-          )}
-        />
-        <Route
-          exact
-          path="/welcome"
-          component={() => <Welcome user={user} />}
-        />
-        <Route exact path="/cats" component={() => <Cats />} />
-        <Route exact path="/favourite" component={() => <Favourite />} />
-      </div>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <Nav />
+        <Switch>
+          <div className="App">
+            {/* <Route path="/login" component={LoginForm} /> */}
+            <Route path="/login" component={TestLoginForm} />
+            <ProtectedRoute path="/welcome" component={Welcome} />
+            <ProtectedRoute path="/favourite" component={Favourite} />
+            <ProtectedRoute path="/cats" component={Cats} />
+            <Route path="/404" component={NotFound} />
+            <Redirect to="/404" />
+          </div>
+        </Switch>
+      </Router>
+    </ThemeProvider>
   );
 }
 

@@ -1,0 +1,36 @@
+CREATE ITERABLE OBJECT 
+-----------------------------
+object.keys(example); array me ta keys apo to object px id url.....
+
+object.values(axample); array me ta values
+
+object.entries(example);  array me keys and values
+
+opote metrepw to object se array kai mporw na kanw .length meta
+--------------------------------------------------------------------
+IPARXEI KAI .hasOwnProperty
+hasOwnProperty is a normal JavaScript function that takes a string argument.
+function isEmpty(obj) {    
+    for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            return false;
+    }
+    return true;
+}
+
+
+
+There are 6 things that evaluate to falsey:
+    undefined
+    null
+    NaN
+    0
+    "" (empty string)
+    false (duh)
+    The single ! converts a value to its truthy or falsey value
+    , which is technically a boolean.But if you need to a real boolean 
+    representation of a value for your expression you must convert it 
+    to a real boolean value using a double not, !!.
+
+    if(!!0){ // evaluates to false //this will not execute } 
+

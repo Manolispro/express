@@ -1,51 +1,83 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { CatContext } from "../contexts/CatContext";
+import Cat from "./Cat";
+
+// -------------------MATERIAL UI---------------------
+import { Container, Grid } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { makeStyles } from "@material-ui/core/styles";
+const useStyles = makeStyles({
+  root: {
+    position: "relative",
+    top: 90,
+  },
+});
 
 const Cats = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const classes = useStyles();
+  const [loading, setLoading] = useState(false);
+  const {
+    cats,
+    setCats,
+    favouriteCats,
+    setFavouriteCats,
+    addFavouriteCat,
+    deleteFavourite,
+    handleDeleteFavourite,
+  } = useContext(CatContext);
 
-  React.useEffect(() => {
+  const FetchData = () => {
     setLoading(true);
     fetch("https://api.thecatapi.com/v1/images/search?limit=9", {
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": "64edff98-7cfc-477b-9519-aaa3bebf78b6",
+        "x-api-key": "64edff98-7cfc-477b-9519-aaa3bebf78b6", //logika na apothikeutei se env me onoma..
       },
     })
       .then((response) => response.json())
-      .then((data) => {
+      .then((cats) => {
         setLoading(false);
-        setData(data);
+        setCats(cats);
+        console.log(cats);
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err);
       });
+  };
+  React.useEffect(() => {
+    cats.length === 0 && FetchData();
   }, []);
 
   if (loading) {
-    return <p>loading..</p>;
+    return (
+      <div className={classes.root}>
+        <CircularProgress />
+      </div>
+    );
   }
+  const handleFavourite = (cat) => {
+    addFavouriteCat(cat);
+  };
+  // const handleDeleteFavourite = (id) => {
+  //   deleteFavourite(id);
+  // };
 
   return (
-    <section class="overflow-hidden text-gray-700 body-font">
-      <div class="container px-5 py-2 mx-auto lg:px-32">
-        <div class="flex flex-wrap justify-center mx-auto ">
-          <div class="flex flex-wrap justify-center mx-auto ">
-            {data.map((element) => (
-              <div class="w-full flex-row mt-6 lg:w-2/4 lg:pl-10 lg:py-6 lg:mt-0">
-                <img
-                  className="object-cover object-center w-full max-h-56 min-h-20 rounded-lg lg:h-auto"
-                  key={element.id}
-                  src={element.url}
-                  alt="Cat"
-                />
-                {/* todo apothikeuse to id apo kathe click save se ena state isos me speade oparator kane map ksana k filter */}
-                <button className=" w-full items-center  px-8 py-2 mt-2 font-semibold text-white transition duration-500 ease-in-out transform bg-black rounded-lg hover:bg-blueGray-900 focus:ring focus:outline-none">
-                  Save
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
+    <Container>
+      <Grid container spacing={3}>
+        {cats.map((element) => (
+          <Grid item xs={12} md={6}>
+            <Cat
+              handleFavourite={handleFavourite}
+              //handleDeleteFavourite={handleDeleteFavourite}
+              key={element.id}
+              cat={element}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
   );
 };
 
